@@ -1,5 +1,9 @@
 # leafly-scraper
 
+## Current results:
+
+Scraping brand `medplex` with 41 products and around 6650 reviews, in more-a-less 1min20s.
+
 ## Data Format
 
 Probably should have classes for:
