@@ -3,7 +3,7 @@ import json
 import os
 
 
-from review import Review, Brand, Product
+from dataclasses import dataclass
 
 
 LEAFLY_REVIEW_API_URL = "https://consumer-api.leafly.com/api/product_reviews/v1/{product_name}?take={take_amount}&skip={skip}"
@@ -23,11 +23,31 @@ LEAFLY_API_TOTALCOUNT = "totalCount"
 LEAFLY_API_MAX_REQ = 60
 
 
-OUTPUT_DIRECTORY_REVIEWS = "./out/products/"
-OUTPUT_DIRECTORY_BRANDS = "./out/brands/"
+@dataclass
+class Review:
+    date: str
+    text: str
+    rating: int
+
+    def to_dict(self):
+        review = {
+            "date": self.date,
+            "text": self.text,
+            "rating": self.rating
+        }
+        return review
 
 
-test_uri = "cbd-delight-llc-artisan-cbd-oil-with-blue-dream-terpenes"
+@dataclass
+class Product:
+    reviews: list[Review]
+    product_slug: str
+
+
+@dataclass
+class Brand:
+    products: list[Product]
+    brand_slug: str
 
 
 def request_product_review_amount(product_slug: str) -> int:
@@ -145,11 +165,13 @@ def write_brand_file(brand: Brand, path: str):
     
 
 if __name__ == "__main__":
+    """ This is merely for test purposes, this script is not meant to be called directly """
     # slug = "cbd-delight-llc-artisan-cbd-oil-with-blue-dream-terpenes"
     # slug = "medplex-delta-8-thc-chocolate-bites-vegan-kush-mints-indica-delta-8-thc-edibles"
     # product = request_product_reviews(slug)
     # write_product_file(product, OUTPUT_DIRECTORY_REVIEWS)
 
-    brand_slug = "medplex"
-    brand = request_brand_reviews(brand_slug)
-    write_brand_file(brand, OUTPUT_DIRECTORY_BRANDS)
+    # brand_slug = "medplex"
+    # brand = request_brand_reviews(brand_slug)
+    # write_brand_file(brand, OUTPUT_DIRECTORY_BRANDS)
+    pass
