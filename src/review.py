@@ -1,5 +1,3 @@
-import json
-
 from dataclasses import dataclass
 
 @dataclass
@@ -15,3 +13,15 @@ class Review:
             "rating": self.rating
         }
         return review
+
+
+@dataclass
+class Product:
+    reviews: list[Review]
+    product_slug: str
+
+
+@dataclass
+class Brand:
+    products: list[Product]
+    brand_slug: str
