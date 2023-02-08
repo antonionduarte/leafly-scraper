@@ -13,7 +13,7 @@ LEAFLY_REVIEW_API_TEXT = "text"
 LEAFLY_REVIEW_API_PRODUCT_SLUG = "slug"
 
 
-LEAFLY_BRAND_API_URL = "https://consumer-api.leafly.ca/api/brands/v1/{brand_name}/product_catalog?lat=38.731&lon=-9.1373&take={take_amount}"
+LEAFLY_BRAND_API_URL = "https://consumer-api.leafly.ca/api/brands/v1/{brand_name}/product_catalog?lat=38.731&lon=-9.1373&take={take_amount}&skip={skip}"
 LEAFLY_BRAND_API_PRODUCT_SLUG = "slug"
 
 
@@ -97,7 +97,7 @@ def request_brand_products_amount(brand_slug: str) -> int:
     """ Performs API request to obtain the amount of products that the brand with the given brand slug has. """
 
     response = requests.get(
-        LEAFLY_BRAND_API_URL.format(brand_name=brand_slug, take_amount=0)
+        LEAFLY_BRAND_API_URL.format(brand_name=brand_slug, take_amount=0, skip=0)
     )
 
     json_response = json.loads(response.text)
@@ -109,17 +109,23 @@ def request_brand_products_amount(brand_slug: str) -> int:
 def request_brand_products_slugs(brand_slug: str) -> list[str]:
     """ Performs API request to obtain the list of slugs for every product of a brand. """
 
-    amount = request_brand_products_amount(brand_slug)
-
-    response = requests.get(
-        LEAFLY_BRAND_API_URL.format(brand_name=brand_slug, take_amount=amount)
-    )
-
+    amount_left = request_brand_products_amount(brand_slug)
+    already_requested = 0
     product_slugs = []
-    json_response = json.loads(response.text)
 
-    for product in json_response[LEAFLY_API_DATA]:
-        product_slugs.append(product[LEAFLY_BRAND_API_PRODUCT_SLUG])
+    while amount_left > 0:
+        to_request = min(amount_left, LEAFLY_API_MAX_REQ)
+
+        response = requests.get(
+            LEAFLY_BRAND_API_URL.format(brand_name=brand_slug, take_amount=to_request, skip=already_requested)
+        )
+
+        already_requested += to_request
+        amount_left -= to_request
+        json_response = json.loads(response.text)
+
+        for product in json_response[LEAFLY_API_DATA]:
+            product_slugs.append(product[LEAFLY_BRAND_API_PRODUCT_SLUG])
 
     return product_slugs
 
