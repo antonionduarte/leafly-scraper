@@ -1,5 +1,7 @@
 # leafly-scraper
 
+Sorta-scraper (i just saw which HTTP requests were being made to their API and implemented them) for [Leafly](https://www.leafly.com/).
+
 ## Current results:
 
 Scraping brand `medplex` with 41 products and around 6650 reviews, in more-a-less 1min20s.
